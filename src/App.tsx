@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm, Controller, FieldValues } from "react-hook-form";
 import { TextField, Button, FormControl } from "@mui/material";
 
@@ -9,16 +9,63 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { useState } from "react";
 import { Header } from "./components/Header";
-import { createTheme } from "@mui/material/styles";
-import { ThemeProvider } from "styled-components";
+
 // import { DesktopDatePicker } from "@mui/x-date-pickers/DesktopDatePicker";
-import Autocomplete from "@mui/material/Autocomplete";
+
 import { RHFAutocompleteField } from "./components/InputSelect";
 import { RHFAutocompleteField1 } from "./components/InputSelectDuplo";
+import useRestRequest from "./services/useRestRequest";
 
 function App() {
+  const labUrl = import.meta.env.VITE_API_URL_LAB;
+  const propUrl = import.meta.env.VITE_API_URL_PROP;
   const { control, handleSubmit, setValue } = useForm();
+
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+
+  const {
+    data: labData,
+    loading: labLoading,
+    error: labError,
+  } = useRestRequest({
+    url: labUrl,
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: null,
+  });
+
+  const {
+    data: propData,
+    loading: propLoading,
+    error: propError,
+  } = useRestRequest({
+    url: propUrl,
+    method: "get",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: null,
+  });
+
+  // // Render based on the state for labUrl
+  if (labLoading) {
+    return <div>Loading lab data...</div>;
+  }
+
+  if (labError) {
+    return <div>Error loading lab data: {String(labError)}</div>;
+  }
+
+  if (propLoading) {
+    return <div>Loading prop data...</div>;
+  }
+
+  if (propError) {
+    return <div>Error loading prop data: {String(propError)}</div>;
+  }
+  // const isDataAvailable = !loadingLab && !errorLab && !loadingProp && !errorProp;
 
   const handleDateChange = (newValue: Date | null) => {
     const formattedDate = newValue ? dayjs(newValue).toISOString() : null;
@@ -30,137 +77,75 @@ function App() {
     console.log(data);
   };
 
-  const newTheme = (theme: any) =>
-    createTheme({
-      ...theme,
-      components: {
-        MuiDateCalendar: {
-          styleOverrides: {
-            root: {
-              color: "#bbdefb",
-              borderRadius: 9,
-              borderWidth: 8,
-              borderColor: "#2196f3",
-              border: "8px solid",
-              backgroundColor: "#0d47a1",
-            },
-          },
-        },
-      },
-    });
-
-  // const defaultProps = {
-  //   options: top100Films,
-  //   getOptionLabel: (option: FilmOptionType) => option.title,
-  // };
-
-  const [options, setOptions] = useState([
-    {
-      id: 1,
-      nome: "Fazenda Agrotis",
-      cnpj: "79.200.214/0001-61",
-    },
-    {
-      id: 2,
-      nome: "Fazenda Wohirish",
-      cnpj: "29.797.010/0001-81",
-    },
-    {
-      id: 3,
-      nome: "Fazenda Zeimninoa",
-      cnpj: "79.538.444/0001-35",
-    },
-    {
-      id: 4,
-      nome: "Fazenda Veavaounn",
-      cnpj: "43.299.844/0001-98",
-    },
-    {
-      id: 5,
-      nome: "Fazenda Nyugebor",
-      cnpj: "53.235.887/0001-63",
-    },
-  ]);
-
-  // const getOpObj = (option) => {
-  //   if (!option.id) option = options.find((op) => op.id === option);
-  //   return option;
-  // };
   return (
     <div>
       <Header />
       <form onSubmit={handleSubmit(onSubmit)}>
         <FormControl>
-          <ThemeProvider theme={newTheme}>
+          <Controller
+            name="nome"
+            control={control}
+            defaultValue=""
+            render={({ field }) => (
+              <TextField
+                {...field}
+                id="standard-basic"
+                label="Nome *"
+                variant="standard"
+              />
+            )}
+          />
+
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DemoContainer components={["DatePicker", "DatePicker"]}>
+              {/* <DatePicker label="Uncontrolled picker" defaultValue={dayjs('2022-04-17')} /> */}
+              <DatePicker
+                label="Data inicial"
+                value={selectedDate}
+                onChange={handleDateChange}
+              />
+
+              <DatePicker
+                label="Data Final"
+                value={selectedDate}
+                onChange={handleDateChange}
+              />
+            </DemoContainer>
+
+            <RHFAutocompleteField1
+              options={propData}
+              labelNameSelect={"nome"}
+              control={control}
+              name="infosPropriedade"
+              placeholder="Propriedade *"
+            />
+
+            <RHFAutocompleteField
+              options={labData}
+              labelNameSelect={"nome"}
+              control={control}
+              name="laboratorio"
+              placeholder="Laboratório *"
+            />
+
             <Controller
-              name="nome"
+              name="observacoes"
               control={control}
               defaultValue=""
               render={({ field }) => (
                 <TextField
                   {...field}
                   id="standard-basic"
-                  label="Nome *"
+                  label="Obervações *"
                   variant="standard"
                 />
               )}
             />
-
-            <LocalizationProvider dateAdapter={AdapterDayjs}>           
-
-              <DemoContainer components={["DatePicker", "DatePicker"]}>
-                {/* <DatePicker label="Uncontrolled picker" defaultValue={dayjs('2022-04-17')} /> */}
-                <DatePicker
-                  label="Data inicial"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                />
-
-                <DatePicker
-                  label="Data Final"
-                  value={selectedDate}
-                  onChange={handleDateChange}
-                />
-              </DemoContainer>
-
-             
-
-              <RHFAutocompleteField1
-                options={options}
-                labelNameSelect={"nome"}
-                control={control}
-                name="infosPropriedade"
-                placeholder="Propriedade *"
-              />
-
-              <RHFAutocompleteField
-                options={options}
-                labelNameSelect={"nome"}
-                control={control}
-                name="laboratorio"
-                placeholder="Laboratório *"
-              />
-
-              <Controller
-                name="observacoes"
-                control={control}
-                defaultValue=""
-                render={({ field }) => (
-                  <TextField
-                    {...field}
-                    id="standard-basic"
-                    label="Obervações *"
-                    variant="standard"
-                  />
-                )}
-              />
-            </LocalizationProvider>
-          </ThemeProvider>
+          </LocalizationProvider>
         </FormControl>
-
-        <TextField id="standard-basic" label="" variant="standard" />
-
-        <button type="submit">Salvar</button>
+        <Button type="submit" color="primary">
+          Salvar
+        </Button>
       </form>
     </div>
   );
