@@ -1,5 +1,4 @@
-import { useForm, Controller, FieldValues } from "react-hook-form";
-import { TextField } from "@mui/material";
+import { useForm, FieldValues } from "react-hook-form";
 import { AutocompleteFieldSimple } from "../../components/AutocompleteSimpleForm";
 import { AutocompleteFielDuo } from "../../components/AutocompleteDuoForm";
 import useRestRequest from "../../services/useRestRequest";
@@ -9,19 +8,11 @@ import {
   CardForm,
   ContainerHome,
   FormSection,
+  ObservacoesSection,
   TextLeftButtonRightSection,
 } from "./style";
 import { DatePickerField } from "../../components/DatePickerField";
 import FormTextField from "../../components/CustomInput";
-
-interface FormData extends FieldValues {
-  nome: string;
-  dataInicial: string;
-  dataFinal: string;
-  infosPropriedade: number;
-  laboratorio: number;
-  observacoes: string;
-}
 
 function HomePage() {
   const labUrl = import.meta.env.VITE_API_URL_LAB;
@@ -78,23 +69,28 @@ function HomePage() {
       const info = dataArray.find((item) => item.id === id);
       return info ? { id: info.id, nome: info.nome, cnpj: info.cnpj } : null;
     };
-  
-    const infosPropriedadeInfo = getCompleteInfo(data.infosPropriedade, propData);
+
+    const infosPropriedadeInfo = getCompleteInfo(
+      data.infosPropriedade,
+      propData
+    );
     const laboratorioInfo = getCompleteInfo(data.laboratorio, labData);
-  
+
     const mappedData = {
       nome: data.nome,
       dataInicial: data.dataInicial,
       dataFinal: data.dataFinal,
-      infosPropriedade: { id: infosPropriedadeInfo?.id, nome: infosPropriedadeInfo?.nome },
+      infosPropriedade: {
+        id: infosPropriedadeInfo?.id,
+        nome: infosPropriedadeInfo?.nome,
+      },
       laboratorio: { id: laboratorioInfo?.id, nome: laboratorioInfo?.nome },
       cnpj: infosPropriedadeInfo?.cnpj ?? "",
       observacoes: data.observacoes,
     };
-  
+
     console.log(mappedData);
   };
-  
 
   return (
     <PageContainer>
@@ -110,6 +106,7 @@ function HomePage() {
           <CardForm>
             <FormTextField
               name="nome"
+              className="nome"
               control={control}
               defaultValue=""
               label="Nome *"
@@ -118,6 +115,7 @@ function HomePage() {
             />
             <DatePickerField
               control={control}
+              className="dataInicial"
               name="dataInicial"
               label="Data Inicial *"
               value={null}
@@ -127,6 +125,7 @@ function HomePage() {
 
             <DatePickerField
               control={control}
+              className="dataFinal"
               name="dataFinal"
               label="Data Final *"
               value={null}
@@ -134,7 +133,7 @@ function HomePage() {
               setValue={setValue}
             />
             <AutocompleteFielDuo
-              className="twoColumns"
+              className="infosPropriedade"
               options={propData}
               labelNameSelect={"nome"}
               control={control}
@@ -144,7 +143,7 @@ function HomePage() {
             />
 
             <AutocompleteFieldSimple
-              className="twoColumns"
+              className="laboratorio"
               options={labData}
               labelNameSelect={"nome"}
               control={control}
@@ -152,16 +151,17 @@ function HomePage() {
               placeholder="Laboratório *"
               setValue={setValue}
             />
-
-            <FormTextField
-              className="lastLine"
-              name="observacoes"
-              control={control}
-              defaultValue=""
-              label="Obervações *"
-              variant="standard"
-              maxLength={100}
-            />
+            <ObservacoesSection className="observacoes">
+              <h2>Obervações</h2>
+              <FormTextField
+                name="observacoes"
+                control={control}
+                defaultValue=""
+                label=" "
+                variant="standard"
+                maxLength={100}
+              />
+            </ObservacoesSection>
           </CardForm>
         </FormSection>
       </ContainerHome>

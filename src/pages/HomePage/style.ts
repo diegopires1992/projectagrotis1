@@ -2,59 +2,87 @@ import styled from "styled-components";
 
 export const ContainerHome = styled.div`
   width: 100%;
-  /* display: grid; */
-  grid-template-columns: 6fr 1fr;
-  /* grid-template-areas:
-    'textLeft textLeft'
-    'nome nome'
-    'dataInicial dataFinal'
-    'prop lab'
-    'obs obs'; */
-  /* gap: 10px; Espaçamento entre as linhas e colunas */
-  /* justify-content: center; */
-  /* align-items: center; */
-  /* height: 100vh; */
+
+
 `;
 
 export const FormSection = styled.form`
   grid-area: form;
-  /* display: grid; */
-  /* background-color: #ffff; */
 
-  /* grid-template-columns: 1fr 2fr; */
-  /* gap: 10px; */
-  /* width: 100%; */
 `;
 
 export const ObservacoesSection = styled.div`
-  /* width: 100%; */
-  /* grid-area: obs; */
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  margin-top: 30px;
+  h2{
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #828D8C;
+  }
 `;
 
 export const TextLeftButtonRightSection = styled.div`
   width: 100%;
-  max-width: 820px;
+  max-width: 1130px;
   margin: 0 auto;
+ 
 `;
 
 export const CardForm = styled.div`
   display: grid;
   width: 98%;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   grid-gap: 10px;
   margin-bottom: 10px;
   gap: 10px;
   padding: 10px;
   background-color: #ffff;
-  max-width: 800px;
+  max-width: 1110px;
   margin: 0 auto;
-  .lastLine {
-    grid-row: 3;
-    grid-column: span 3;
+  grid-template-areas:
+    "nome dataFinal dataInicial"
+    "infosPropriedade infosPropriedade laboratorio"
+    "observacoes observacoes observacoes";
+
+  .dataInicial {
+    grid-area: dataInicial;
+    margin-top: -8px;
+    overflow: hidden;
+  }
+  .nome {
+    grid-area: nome;
+    grid-column: span 2;
   }
 
-  .twoColumns {
-    grid-column: span 1.5;
+  .dataFinal {
+    grid-area: dataFinal;
+    margin-top: -8px;
+    overflow: hidden;
+    /* grid-column: span 2; */
   }
+
+  .infosPropriedade {
+    grid-area: infosPropriedade;
+    grid-column: span 2;
+  }
+
+  .laboratorio {
+    grid-area: laboratorio;
+    grid-column: span 2;
+  }
+
+  .observacoes {
+    grid-area: observacoes;
+     grid-column: span 4;
+  }
+
+  label+.css-grtc11-MuiInputBase-root-MuiInput-root {
+    margin-top: 29px;
+}
+
+
 `;

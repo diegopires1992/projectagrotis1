@@ -2,8 +2,9 @@ import * as React from "react";
 import { Controller, Control, Path, FieldValues } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
+import { ThemeProvider, createTheme } from "@mui/material";
 
-interface RHFAutocompleteFieldProps<
+interface AutocompleteFieldSimpleProps<
   O extends { id: string; label: string },
   TField extends FieldValues
 > {
@@ -20,19 +21,33 @@ export const AutocompleteFieldSimple = <
   O extends { id: string; label: string },
   TField extends FieldValues
 >(
-  props: RHFAutocompleteFieldProps<O, TField>
+  props: AutocompleteFieldSimpleProps<O, TField>
 ) => {
   const { control, options, name, labelNameSelect, className } = props;
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: "#00A98E", 
+        contrastText:"#00A98E",
+       
+      },
+      secondary:{
+        main: "#00796B",
+        contrastText:"#00796B",
+      }
+    },
+    
+  });
+  
   return (
     <Controller
       name={name}
       control={control}
-      rules={{
-        required: "this field is requried",
-      }}
+      rules={{ required: 'Este campo é obrigatório' }}
       render={({ field, fieldState: { error } }) => {
         const { onChange, value, ref } = field;
         return (
+          <ThemeProvider theme={theme}>
           <div className={className}>
             <Autocomplete
               value={
@@ -64,6 +79,7 @@ export const AutocompleteFieldSimple = <
               <span style={{ color: "red" }}>{error.message}</span>
             ) : null}
           </div>
+          </ThemeProvider>
         );
       }}
     />

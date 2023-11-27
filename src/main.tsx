@@ -7,6 +7,7 @@ import {
 import HomePage from './pages/HomePage/index.tsx';
 import { ErrorPage } from './pages/ErrorPage/index.tsx';
 
+
 const router = createBrowserRouter([
   {
     path: "/",

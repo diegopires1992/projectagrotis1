@@ -1,7 +1,8 @@
 import React from "react";
 import { Control, FieldValues } from "react-hook-form";
-import TextField from "@mui/material/TextField";
 import { Controller } from "react-hook-form";
+import { ThemeProvider, createTheme } from "@mui/material";
+import { WhiteBorderTextField } from "./styles";
 
 interface FormTextFieldProps {
   name: string;
@@ -13,6 +14,21 @@ interface FormTextFieldProps {
   className?: string;
 }
 
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#00A98E", 
+      contrastText:"#00A98E",
+     
+    },
+    secondary:{
+      main: "#00796B",
+      contrastText:"#00796B",
+    }
+  },
+  
+});
+
 const FormTextField: React.FC<FormTextFieldProps> = ({
   name,
   control,
@@ -20,28 +36,41 @@ const FormTextField: React.FC<FormTextFieldProps> = ({
   label,
   variant = "standard",
   maxLength,
-  className
+  className,
 }) => {
   return (
     <Controller
       name={name}
       control={control}
       defaultValue={defaultValue}
-      render={({ field }) => (
-        <div style={{ display: "flex", flexDirection: "column" }} className={className}>
-          <TextField
-            {...field}
-            id={name}
-            label={label}
-            variant={variant}
-            inputProps={{ maxLength: maxLength }}
-          />
-          {maxLength && (
-            <div style={{ textAlign: "right", marginTop: "5px", color: "gray" }}>
-              {field.value.length}/{maxLength}
-            </div>
-          )}
-        </div>
+      rules={{ required: 'Este campo é obrigatório' }}
+      render={({ field,fieldState: { error } }) => (
+        <ThemeProvider theme={theme}>
+          <div
+            style={{ display: "flex", flexDirection: "column" }}
+            className={className}
+          >
+            <WhiteBorderTextField
+              {...field}
+              id={name}
+              label={label}
+              variant={variant}
+              inputProps={{
+                maxLength: maxLength,                
+              }}
+            />
+            {maxLength && (
+              <div
+                style={{ textAlign: "right", marginTop: "5px", color: "gray" }}
+              >
+                {field.value.length}/{maxLength}
+              </div>
+            )}
+            {error ? (
+                <span style={{ color: "red" }}>{error.message}</span>
+              ) : null}
+          </div>
+        </ThemeProvider>
       )}
     />
   );
