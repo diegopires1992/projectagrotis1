@@ -1,36 +1,50 @@
-import React from 'react';
-import TextField from '@mui/material/TextField';
+import React from "react";
+import { Control, FieldValues } from "react-hook-form";
+import TextField from "@mui/material/TextField";
+import { Controller } from "react-hook-form";
 
-interface FormValues {
-  nome: string;
-  propriedades: string;
-  observacoes?: string;
-  dataInicial: string;
-  laboratorio: string;
-  dataFinal: string;
-}
-
-
-interface CustomInputProps {
-  label: string;
+interface FormTextFieldProps {
   name: string;
-  register: FormValues; 
-  required?: boolean;
-  type?: string;
+  control: Control<FieldValues>;
+  defaultValue?: string;
+  label: string;
+  variant?: "standard" | "outlined" | "filled";
+  maxLength?: number;
+  className?: string;
 }
 
-const CustomInput: React.FC<CustomInputProps> = ({ label, name, register, required = false, type = 'text' }) => {
+const FormTextField: React.FC<FormTextFieldProps> = ({
+  name,
+  control,
+  defaultValue = "",
+  label,
+  variant = "standard",
+  maxLength,
+  className
+}) => {
   return (
-    <TextField
-      label={label}
+    <Controller
       name={name}
-      // inputRef={register({ required })}
-      fullWidth
-      margin="normal"
-      type={type}
-      variant="outlined"
+      control={control}
+      defaultValue={defaultValue}
+      render={({ field }) => (
+        <div style={{ display: "flex", flexDirection: "column" }} className={className}>
+          <TextField
+            {...field}
+            id={name}
+            label={label}
+            variant={variant}
+            inputProps={{ maxLength: maxLength }}
+          />
+          {maxLength && (
+            <div style={{ textAlign: "right", marginTop: "5px", color: "gray" }}>
+              {field.value.length}/{maxLength}
+            </div>
+          )}
+        </div>
+      )}
     />
   );
 };
 
-export default CustomInput;
+export default FormTextField;

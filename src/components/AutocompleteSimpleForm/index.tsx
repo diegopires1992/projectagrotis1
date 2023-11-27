@@ -11,27 +11,29 @@ interface RHFAutocompleteFieldProps<
   name: Path<TField>;
   options: O[];
   placeholder?: string;
-  labelNameSelect:string;
+  labelNameSelect: string;
+  className?: string;
+  setValue: (name: string, value: string | null) => void;
 }
 
-export const RHFAutocompleteField = <
+export const AutocompleteFieldSimple = <
   O extends { id: string; label: string },
   TField extends FieldValues
 >(
   props: RHFAutocompleteFieldProps<O, TField>
 ) => {
-  const { control, options, name,labelNameSelect } = props;
+  const { control, options, name, labelNameSelect, className } = props;
   return (
     <Controller
       name={name}
       control={control}
       rules={{
-        required: "this field is requried"
+        required: "this field is requried",
       }}
       render={({ field, fieldState: { error } }) => {
         const { onChange, value, ref } = field;
         return (
-          <>
+          <div className={className}>
             <Autocomplete
               value={
                 value
@@ -40,16 +42,17 @@ export const RHFAutocompleteField = <
                     }) ?? null
                   : null
               }
-              getOptionLabel={(option:unknown) => {
+              getOptionLabel={(option: unknown) => {
                 return option[labelNameSelect];
               }}
-              onChange={(event: any, newValue) => {
+              onChange={(event: unknown, newValue) => {
                 onChange(newValue ? newValue.id : null);
               }}
               id="controllable-states-demo"
               options={options}
               renderInput={(params) => (
                 <TextField
+                  className={className}
                   {...params}
                   label={props.placeholder}
                   inputRef={ref}
@@ -60,7 +63,7 @@ export const RHFAutocompleteField = <
             {error ? (
               <span style={{ color: "red" }}>{error.message}</span>
             ) : null}
-          </>
+          </div>
         );
       }}
     />

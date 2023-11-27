@@ -1,7 +1,7 @@
 import { useForm, Controller, FieldValues } from "react-hook-form";
 import { TextField } from "@mui/material";
-import { RHFAutocompleteField } from "../../components/InputSelect";
-import { RHFAutocompleteField1 } from "../../components/InputSelectDuplo";
+import { AutocompleteFieldSimple } from "../../components/AutocompleteSimpleForm";
+import { AutocompleteFielDuo } from "../../components/AutocompleteDuoForm";
 import useRestRequest from "../../services/useRestRequest";
 import { PageContainer } from "../../components/PageContainer";
 import { TextLeftButtonRight } from "../../components/TextLeftButtonRight";
@@ -12,6 +12,16 @@ import {
   TextLeftButtonRightSection,
 } from "./style";
 import { DatePickerField } from "../../components/DatePickerField";
+import FormTextField from "../../components/CustomInput";
+
+interface FormData extends FieldValues {
+  nome: string;
+  dataInicial: string;
+  dataFinal: string;
+  infosPropriedade: number;
+  laboratorio: number;
+  observacoes: string;
+}
 
 function HomePage() {
   const labUrl = import.meta.env.VITE_API_URL_LAB;
@@ -61,8 +71,30 @@ function HomePage() {
   // const isDataAvailable = !loadingLab && !errorLab && !loadingProp && !errorProp;
 
   const onSubmit = (data: FieldValues) => {
-    console.log(data);
+    const getCompleteInfo = (
+      id: number,
+      dataArray: { id: number; nome: string; cnpj?: string }[]
+    ) => {
+      const info = dataArray.find((item) => item.id === id);
+      return info ? { id: info.id, nome: info.nome, cnpj: info.cnpj } : null;
+    };
+  
+    const infosPropriedadeInfo = getCompleteInfo(data.infosPropriedade, propData);
+    const laboratorioInfo = getCompleteInfo(data.laboratorio, labData);
+  
+    const mappedData = {
+      nome: data.nome,
+      dataInicial: data.dataInicial,
+      dataFinal: data.dataFinal,
+      infosPropriedade: { id: infosPropriedadeInfo?.id, nome: infosPropriedadeInfo?.nome },
+      laboratorio: { id: laboratorioInfo?.id, nome: laboratorioInfo?.nome },
+      cnpj: infosPropriedadeInfo?.cnpj ?? "",
+      observacoes: data.observacoes,
+    };
+  
+    console.log(mappedData);
   };
+  
 
   return (
     <PageContainer>
@@ -76,24 +108,19 @@ function HomePage() {
             />
           </TextLeftButtonRightSection>
           <CardForm>
-            <Controller
+            <FormTextField
               name="nome"
               control={control}
               defaultValue=""
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  id="standard-basic"
-                  label="Nome *"
-                  variant="standard"
-                />
-              )}
+              label="Nome *"
+              variant="standard"
+              maxLength={40}
             />
             <DatePickerField
               control={control}
               name="dataInicial"
-              label="Data Inicial"
-              value={null} // ou você pode fornecer uma data inicial aqui
+              label="Data Inicial *"
+              value={null}
               onChange={(date) => console.log("Data selecionada:", date)}
               setValue={setValue}
             />
@@ -101,38 +128,39 @@ function HomePage() {
             <DatePickerField
               control={control}
               name="dataFinal"
-              label="Data Final"
-              value={null} // ou você pode fornecer uma data inicial aqui
+              label="Data Final *"
+              value={null}
               onChange={(date) => console.log("Data selecionada:", date)}
               setValue={setValue}
             />
-            <RHFAutocompleteField1
+            <AutocompleteFielDuo
+              className="twoColumns"
               options={propData}
               labelNameSelect={"nome"}
               control={control}
               name="infosPropriedade"
               placeholder="Propriedade *"
+              setValue={setValue}
             />
 
-            <RHFAutocompleteField
+            <AutocompleteFieldSimple
+              className="twoColumns"
               options={labData}
               labelNameSelect={"nome"}
               control={control}
               name="laboratorio"
               placeholder="Laboratório *"
+              setValue={setValue}
             />
-            <Controller
+
+            <FormTextField
+              className="lastLine"
               name="observacoes"
               control={control}
               defaultValue=""
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  id="standard-basic"
-                  label="Obervações *"
-                  variant="standard"
-                />
-              )}
+              label="Obervações *"
+              variant="standard"
+              maxLength={100}
             />
           </CardForm>
         </FormSection>

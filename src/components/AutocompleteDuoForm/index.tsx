@@ -1,4 +1,3 @@
-import * as React from "react";
 import { Controller, Control, Path, FieldValues } from "react-hook-form";
 import TextField from "@mui/material/TextField";
 import Autocomplete from "@mui/material/Autocomplete";
@@ -13,15 +12,16 @@ interface RHFAutocompleteFieldProps<
   options: O[];
   placeholder?: string;
   labelNameSelect:string;
+  className?: string;
 }
 
-export const RHFAutocompleteField1 = <
+export const AutocompleteFielDuo = <
   O extends { id: string; label: string },
   TField extends FieldValues
 >(
   props: RHFAutocompleteFieldProps<O, TField>
 ) => {
-  const { control, options, name,labelNameSelect } = props;
+  const { control, options, name,labelNameSelect,className } = props;
   return (
     <Controller
       name={name}
@@ -32,7 +32,7 @@ export const RHFAutocompleteField1 = <
       render={({ field, fieldState: { error } }) => {
         const { onChange, value, ref } = field;
         return (
-          <>
+          <div className={className}>
             <Autocomplete
               value={
                 value
@@ -67,7 +67,7 @@ export const RHFAutocompleteField1 = <
             {error ? (
               <span style={{ color: "red" }}>{error.message}</span>
             ) : null}
-          </>
+          </div>
         );
       }}
     />
